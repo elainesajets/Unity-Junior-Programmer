@@ -100,3 +100,4 @@ Assets/Unity.VisualScripting.Generated/VisualScripting.Core/Property Providers.m
 # Auto-generated scenes by play mode tests
 Assets/InitTestScene*.unity*
 
+WebGL Builds/
