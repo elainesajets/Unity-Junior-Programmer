@@ -4,8 +4,8 @@ _This challenge is part of the Unity Junior Programmer Pathway._
 
 This folder includes:
 
-- The prototype used and edited during the learning section (`Assets > Scenes > Prototype 3`)
-- The full challenge implementation (`Assets > Challenge 3`)
+- The prototype used and edited during the learning section ([Assets](Assets) > [Scenes](Assets/Scenes) > Prototype 3)
+- The full challenge implementation ([Assets](Assets) > [Challenge 3](Assets/Challenge%203))
 
 ### Challenge Overview:
 
