@@ -101,3 +101,5 @@ Assets/Unity.VisualScripting.Generated/VisualScripting.Core/Property Providers.m
 Assets/InitTestScene*.unity*
 
 WebGL Builds/
+**/connectwebgl.zip
+**/webgl_sharing/
