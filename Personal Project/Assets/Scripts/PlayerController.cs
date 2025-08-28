@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private float moveSpeed = 10.0f;
+    private float moveSpeed = 20.0f;
     public float jumpForce = 7f;
     private Rigidbody playerRb;
     private float zBound = 6f;
@@ -27,6 +27,24 @@ public class PlayerController : MonoBehaviour
         {
             isGrounded = true;
         }
+
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Debug.Log("Player hit an enemy");
+        }
+
+        if (collision.gameObject.CompareTag("Environment"))
+        {
+            Debug.Log("Player hit a tree");
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Powerup"))
+        {
+            Destroy(other.gameObject);
+        }
     }
 
     void MovePlayer()
@@ -35,8 +53,10 @@ public class PlayerController : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal"); // A/D or Left/Right
         float vertical = Input.GetAxis("Vertical");     // W/S or Up/Down
 
-        playerRb.AddForce(Vector3.forward * moveSpeed * vertical);
-        playerRb.AddForce(Vector3.right * moveSpeed * horizontal);
+        Vector3 move = new Vector3(horizontal, 0, vertical) * moveSpeed;
+        playerRb.linearVelocity = new Vector3(move.x, playerRb.linearVelocity.y, move.z);
+        // playerRb.AddForce(Vector3.forward * moveSpeed * vertical);
+        // playerRb.AddForce(Vector3.right * moveSpeed * horizontal);
 
 
         // Jump input
