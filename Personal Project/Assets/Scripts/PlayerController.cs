@@ -44,6 +44,7 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("Powerup"))
         {
             Destroy(other.gameObject);
+            Debug.Log("Picked up a powerup");
         }
     }
 

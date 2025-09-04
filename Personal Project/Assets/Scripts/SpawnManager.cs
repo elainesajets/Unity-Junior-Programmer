@@ -6,7 +6,7 @@ public class SpawnManager : MonoBehaviour
     public GameObject mouse;
     public GameObject obstacle;
 
-    private float ySpawnPos = 0.5f;
+    private float ySpawnPos = 0.3f;
     private float zSpawnPos = 10.0f;
     private float xSpawnRange = 12.0f;
 
