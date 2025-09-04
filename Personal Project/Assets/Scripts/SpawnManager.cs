@@ -2,13 +2,15 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    public GameObject[] enemies;
-    public GameObject mouse;
-    public GameObject obstacle;
+    [SerializeField] GameObject[] enemies;
+    [SerializeField] GameObject mouse;
+    [SerializeField] GameObject obstacle;
 
     private float ySpawnPos = 0.3f;
     private float zSpawnPos = 10.0f;
     private float xSpawnRange = 12.0f;
+    private float lastX;
+    [SerializeField] private float spawnDistance = 2.0f;
 
     private float spawnDelay = 1.0f;
     private float repeatRate = 1.0f;
@@ -17,9 +19,7 @@ public class SpawnManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        InvokeRepeating("SpawnEnemy", spawnDelay, repeatRate);
-        InvokeRepeating("SpawnObstacle", spawnDelay, repeatRate + 2.0f);
-        InvokeRepeating("SpawnMouse", spawnDelay, repeatRate + 5.0f);
+
     }
 
     // Update is called once per frame
@@ -28,31 +28,46 @@ public class SpawnManager : MonoBehaviour
 
     }
 
+    public void Spawn()
+    {
+        InvokeRepeating("SpawnEnemy", spawnDelay, repeatRate);
+        InvokeRepeating("SpawnObstacle", spawnDelay, repeatRate + 2.0f);
+        InvokeRepeating("SpawnMouse", spawnDelay, repeatRate + 5.0f);
+    }
+
     void SpawnEnemy()
     {
-        float randomX = Random.Range(-xSpawnRange, xSpawnRange);
         int randomIndex = Random.Range(0, enemies.Length);
 
-        Vector3 spawnPos = new Vector3(randomX, ySpawnPos, zSpawnPos);
+        Vector3 spawnPos = new Vector3(GetValidX(), ySpawnPos, zSpawnPos);
 
         Instantiate(enemies[randomIndex], spawnPos, enemies[randomIndex].gameObject.transform.rotation);
     }
 
     void SpawnMouse()
     {
-        float randomX = Random.Range(-xSpawnRange, xSpawnRange);
-
-        Vector3 spawnPos = new Vector3(randomX, ySpawnPos, zSpawnPos);
+        Vector3 spawnPos = new Vector3(GetValidX(), ySpawnPos, zSpawnPos);
 
         Instantiate(mouse, spawnPos, Quaternion.identity);
     }
 
     void SpawnObstacle()
     {
-        float randomX = Random.Range(-xSpawnRange, xSpawnRange);
-
-        Vector3 spawnPos = new Vector3(randomX, ySpawnPos, zSpawnPos);
+        Vector3 spawnPos = new Vector3(GetValidX(), ySpawnPos, zSpawnPos);
 
         Instantiate(obstacle, spawnPos, Quaternion.identity);
+    }
+
+    float GetValidX()
+    {
+        float randomX;
+        do
+        {
+            randomX = Random.Range(-xSpawnRange, xSpawnRange);
+        } while (Mathf.Abs(randomX - lastX) < spawnDistance);
+
+        lastX = randomX;
+        return randomX;
+
     }
 }

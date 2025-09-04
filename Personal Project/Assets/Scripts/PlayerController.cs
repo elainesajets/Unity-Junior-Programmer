@@ -3,23 +3,27 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private float moveSpeed = 20.0f;
-    public float jumpForce = 7f;
+    private float jumpForce = 7f;
     private Rigidbody playerRb;
     private float zBound = 6f;
+    public GameManager gameManager;
 
     private bool isGrounded;
+
 
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
+        Time.timeScale = 0;
     }
 
     void Update()
     {
         MovePlayer();
         ConstrainPlayerPosition();
-
     }
+
+
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -30,7 +34,7 @@ public class PlayerController : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            Debug.Log("Player hit an enemy");
+            gameManager.UpdateLives(1);
         }
 
         if (collision.gameObject.CompareTag("Environment"))
@@ -45,6 +49,7 @@ public class PlayerController : MonoBehaviour
         {
             Destroy(other.gameObject);
             Debug.Log("Picked up a powerup");
+            gameManager.UpdateBoneCount(1);
         }
     }
 
@@ -80,4 +85,5 @@ public class PlayerController : MonoBehaviour
             transform.position = new Vector3(transform.position.x, transform.position.y, zBound);
         }
     }
+
 }
