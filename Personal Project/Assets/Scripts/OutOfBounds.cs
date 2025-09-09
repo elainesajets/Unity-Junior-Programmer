@@ -4,7 +4,7 @@ using UnityEngine;
 public class OutOfBounds : MonoBehaviour
 {
 
-    private float zbound = 10;
+    private float zbound = 12;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
