@@ -53,6 +53,8 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnObstacle()
     {
+        if (obstacle == null) return;
+
         Vector3 spawnPos = new Vector3(GetValidX(), ySpawnPos, zSpawnPos);
 
         Instantiate(obstacle, spawnPos, Quaternion.identity);
