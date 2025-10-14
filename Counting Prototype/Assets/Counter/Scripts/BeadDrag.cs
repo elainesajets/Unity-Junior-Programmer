@@ -3,11 +3,13 @@ using UnityEngine;
 public class BeadDrag : MonoBehaviour
 {
     [SerializeField] float liftHeight = 10f;
-    Camera cam;
-    bool dragging;
-    Vector3 grabOffset;
-    float grabY;
-    float originalY;
+    private Camera cam;
+    private bool dragging;
+    private Vector3 grabOffset;
+    private float grabY;
+    private float originalY;
+
+    [SerializeField] AudioClip pickUpClip;
 
     void Awake()
     {
@@ -26,6 +28,11 @@ public class BeadDrag : MonoBehaviour
         {
             Vector3 hit = ray.GetPoint(enter);
             grabOffset = new Vector3(transform.position.x - hit.x, 0f, transform.position.z - hit.z);
+        }
+        if (pickUpClip != null)
+        {
+            AudioSource.PlayClipAtPoint(pickUpClip, cam.transform.position);
+            Debug.Log("Sound played");
         }
 
         dragging = true;
