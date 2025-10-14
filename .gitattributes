@@ -7,3 +7,6 @@
 *.meta linguist-detectable=false
 *.unity linguist-language=YAML
 *.prefab linguist-language=YAML
+*.shader linguist-detectable=false
+*.hlsl linguist-detectable=false
+*.cginc linguist-detectable=false
