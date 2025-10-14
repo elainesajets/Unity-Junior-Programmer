@@ -13,14 +13,6 @@ public class SpawnManager : MonoBehaviour
     {
         for (int i = 0; i < beadCount; i++)
         {
-            // Vector3 randomPos = new Vector3(
-            //     Random.Range(-spawnArea.x / 2, spawnArea.x / 2),
-            //     0,
-            //     Random.Range(-spawnArea.z / 2, spawnArea.z / 2));
-
-            float beadRadius = beadPrefab.GetComponent<Collider>().bounds.extents.y;
-
-
             Vector3 spawnPos = new Vector3(
                 Random.Range(spawnBox.bounds.min.x, spawnBox.bounds.max.x),
                 spawnBox.bounds.min.y,

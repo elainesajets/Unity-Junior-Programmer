@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Counter : MonoBehaviour
 {
     public Text CounterText;
+    public GameObject gameManager;
 
     private int Count = 0;
 
@@ -17,45 +16,30 @@ public class Counter : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Bead") && gameObject.CompareTag("RedContainer"))
-        {
-            Renderer beadRenderer = other.GetComponent<Renderer>();
-            if (beadRenderer != null && beadRenderer.material.color == Color.red)
-            {
-                Count += 1;
-                CounterText.text = "" + Count;
-            }
-        }
+        var bead = other.GetComponent<ColorSetter>();
+        var container = gameObject.GetComponent<ColorSetter>();
 
-        if (other.CompareTag("Bead") && gameObject.CompareTag("BlueContainer"))
+        if (bead != null && bead.beadColor == container.beadColor)
         {
-            Renderer beadRenderer = other.GetComponent<Renderer>();
-            if (beadRenderer != null && beadRenderer.material.color == Color.blue)
-            {
-                Count += 1;
-                CounterText.text = "" + Count;
-            }
+            Count += 1;
+            gameManager.GetComponent<GameManager>().UpdateTotal(1);
+            CounterText.text = "" + Count;
         }
 
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Bead"))
-        {
-            //     Renderer beadRenderer = other.GetComponent<Renderer>();
-            //     if (beadRenderer != null && beadRenderer.material.color == Color.red)
-            //     {
-            //         Count -= 1;
-            //         CounterText.text = "" + Count;
-            //     }
-            // }
+        var bead = other.GetComponent<ColorSetter>();
+        var container = gameObject.GetComponent<ColorSetter>();
 
-            if (other.CompareTag("Bead"))
-            {
-                Count -= 1;
-                CounterText.text = "" + Count;
-            }
+        if (bead != null && bead.beadColor == container.beadColor)
+        {
+            Count -= 1;
+            gameManager.GetComponent<GameManager>().UpdateTotal(-1);
+            CounterText.text = "" + Count;
         }
+
+
     }
 }
