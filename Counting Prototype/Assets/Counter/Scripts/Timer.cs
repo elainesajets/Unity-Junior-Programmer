@@ -1,8 +1,8 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 using System;
 
+//[RequireComponent(typeof(TextMeshProUGUI))]
 public class Timer : MonoBehaviour
 {
     public float timer = 10f;
@@ -22,7 +22,7 @@ public class Timer : MonoBehaviour
 
         if (timer <= 0.0f)
         {
-            gameManager.GetComponent<GameManager>().GameOver();
+            // gameManager.GetComponent<GameManager>().GameOver();
         }
     }
 }
