@@ -40,4 +40,11 @@ In this mission, you expanded your foundational programming skills and built fou
 
 ---
 
-🎮 **Play it here:** [Counter Prototype - Sort It!](https://play.unity.com/en/games/8d7dc4ee-429e-42cc-81be-aac92eb6a5d7/counter-prototype-sort-it)
+### 🎮 **Play it here:** [Counter Prototype - Sort It!](https://play.unity.com/en/games/8d7dc4ee-429e-42cc-81be-aac92eb6a5d7/counter-prototype-sort-it)
+
+---
+
+### **Credits**
+
+- Background music by [Neko Legends](https://assetstore.unity.com/packages/audio/music/music-sanctuary-free-piano-solo-296088)
+- Bead pickup sound by [SwishSwoosh](https://assetstore.unity.com/packages/audio/sound-fx/free-ui-click-sound-pack-244644)
