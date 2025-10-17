@@ -1,31 +1,52 @@
-using System.Collections;
-using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainManager : MonoBehaviour
 {
+
+    public static MainManager Instance;
     public Brick BrickPrefab;
     public int LineCount = 6;
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text HighScoreText;
     public GameObject GameOverText;
-    
+
     private bool m_Started = false;
     private int m_Points;
-    
+    private int bestScore;
+    private string highScoreName;
+    public string playerName;
+
     private bool m_GameOver = false;
 
-    
+    void Awake()
+    {
+        // if (Instance != null)
+        // {
+        //     Destroy(gameObject);
+        //     return;
+        // }
+        // Instance = this;
+        // DontDestroyOnLoad(gameObject);
+
+        LoadPoints();
+    }
     // Start is called before the first frame update
     void Start()
     {
+        if (!string.IsNullOrEmpty(SessionData.PlayerName)) playerName = SessionData.PlayerName;
+
+        Debug.Log("Player name: " + playerName);
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
-        
-        int[] pointCountArray = new [] {1,1,2,2,5,5};
+
+        int[] pointCountArray = new[] { 1, 1, 2, 2, 5, 5 };
         for (int i = 0; i < LineCount; ++i)
         {
             for (int x = 0; x < perLine; ++x)
@@ -36,6 +57,8 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+
+
     }
 
     private void Update()
@@ -57,8 +80,19 @@ public class MainManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                if (m_Points > bestScore) UpdateBestScore();
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
             }
+            else if (Input.GetKeyDown(KeyCode.R))
+            {
+                ResetData();
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                Debug.Log(playerName);
+            }
+            // else if{
+            // add quit to menu on ESC   
+            // }
         }
     }
 
@@ -68,9 +102,79 @@ public class MainManager : MonoBehaviour
         ScoreText.text = $"Score : {m_Points}";
     }
 
+    void UpdateBestScore()
+    {
+        bestScore = m_Points;
+        highScoreName = playerName;
+
+        HighScoreText.text = $"Best Score: {highScoreName} : {bestScore}";
+        SavePoints();
+    }
+
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+
+    [System.Serializable]
+    class SaveData
+    {
+        public int bestScore;
+        public string highScoreName;
+        public string playerName;
+    }
+
+    public void SavePoints()
+    {
+        var data = new SaveData
+        {
+            bestScore = bestScore,
+            highScoreName = highScoreName,
+            playerName = playerName
+        };
+        File.WriteAllText(Path.Combine(Application.persistentDataPath, "savefile.json"),
+                          JsonUtility.ToJson(data));
+    }
+
+    public void LoadPoints()
+    {
+        var path = Path.Combine(Application.persistentDataPath, "savefile.json");
+        if (!File.Exists(path)) return;
+        var data = JsonUtility.FromJson<SaveData>(File.ReadAllText(path));
+        bestScore = data.bestScore;
+        highScoreName = data.highScoreName;
+        playerName = data.playerName;
+    }
+
+    public void ResetData()
+    {
+        var data = new SaveData
+        {
+            bestScore = 0,
+            highScoreName = "",
+            playerName = ""
+        };
+
+        File.WriteAllText(Path.Combine(Application.persistentDataPath, "savefile.json"),
+                          JsonUtility.ToJson(data));
+    }
+
+    void OnEnable() { SceneManager.sceneLoaded += OnSceneLoaded; }
+    void OnDisable() { SceneManager.sceneLoaded -= OnSceneLoaded; }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (HighScoreText == null)
+        {
+            var go = GameObject.Find("HighScoreText");
+            if (go != null) HighScoreText = go.GetComponent<Text>();
+        }
+
+        if (HighScoreText != null)
+        {
+            HighScoreText.text = $"Best Score: {highScoreName} : {bestScore}";
+
+        }
     }
 }
