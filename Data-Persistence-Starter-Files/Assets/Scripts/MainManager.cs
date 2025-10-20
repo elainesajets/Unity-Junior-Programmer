@@ -27,22 +27,14 @@ public class MainManager : MonoBehaviour
 
     void Awake()
     {
-        // if (Instance != null)
-        // {
-        //     Destroy(gameObject);
-        //     return;
-        // }
-        // Instance = this;
-        // DontDestroyOnLoad(gameObject);
-
         LoadPoints();
     }
-    // Start is called before the first frame update
+
     void Start()
     {
         if (!string.IsNullOrEmpty(SessionData.PlayerName)) playerName = SessionData.PlayerName;
-
         Debug.Log("Player name: " + playerName);
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
 
@@ -57,8 +49,6 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
-
-
     }
 
     private void Update()
@@ -86,13 +76,14 @@ public class MainManager : MonoBehaviour
             }
             else if (Input.GetKeyDown(KeyCode.R))
             {
-                ResetData();
+                GameManager.instance.ResetData();
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                 Debug.Log(playerName);
             }
-            // else if{
-            // add quit to menu on ESC   
-            // }
+            else if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                SceneManager.LoadScene(0);
+            }
         }
     }
 
@@ -145,19 +136,6 @@ public class MainManager : MonoBehaviour
         bestScore = data.bestScore;
         highScoreName = data.highScoreName;
         playerName = data.playerName;
-    }
-
-    public void ResetData()
-    {
-        var data = new SaveData
-        {
-            bestScore = 0,
-            highScoreName = "",
-            playerName = ""
-        };
-
-        File.WriteAllText(Path.Combine(Application.persistentDataPath, "savefile.json"),
-                          JsonUtility.ToJson(data));
     }
 
     void OnEnable() { SceneManager.sceneLoaded += OnSceneLoaded; }

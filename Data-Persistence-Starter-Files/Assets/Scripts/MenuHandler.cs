@@ -2,11 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.IO;
-
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
+using UnityEngine.UI;
 
 public static class SessionData
 {
@@ -19,6 +15,10 @@ public static class SessionData
 public class MenuHandler : MonoBehaviour
 {
     [SerializeField] TMP_InputField nameInput;
+    private string highestScorer;
+    private int highestPoints;
+    public TextMeshProUGUI highScoreText;
+    public TextMeshProUGUI warning;
 
     public void SaveName(string name)
     {
@@ -26,38 +26,48 @@ public class MenuHandler : MonoBehaviour
         Debug.Log(SessionData.PlayerName);
     }
 
-    public void StartNew()
+    void Awake()
     {
-        if (nameInput != null) SessionData.PlayerName = nameInput.text;
-        SceneManager.LoadScene(1);
+        LoadHighScore();
+
+        if (highestScorer != null)
+        {
+            highScoreText.text = $"Best Score: {highestScorer} : {highestPoints}";
+        }
+
     }
 
-    public void ResetData()
+    public void StartNew()
     {
-        string path = Path.Combine(Application.persistentDataPath, "savefile.json");
-        if (File.Exists(path))
+        if (string.IsNullOrEmpty(nameInput.text))
         {
-            File.Delete(path);
-            Debug.Log(path + " deleted");
+            warning.gameObject.SetActive(true);
+            Debug.Log("Please enter a name");
+            return;
         }
         else
         {
-            Debug.Log("No save file found");
+            SessionData.PlayerName = nameInput.text;
+            SceneManager.LoadScene(1);
+
         }
-
     }
-
-    public void Exit()
+    [System.Serializable]
+    class SaveData
     {
-
-#if UNITY_EDITOR
-        EditorApplication.ExitPlaymode();
-#else
-        Application.Quit();
-#endif
-
+        public int bestScore;
+        public string highScoreName;
     }
 
+    public void LoadHighScore()
+    {
+        var path = Path.Combine(Application.persistentDataPath, "savefile.json");
+        if (!File.Exists(path)) return;
+        var data = JsonUtility.FromJson<SaveData>(File.ReadAllText(path));
+        highestPoints = data.bestScore;
+        highestScorer = data.highScoreName;
+    }
 
 }
+
 
