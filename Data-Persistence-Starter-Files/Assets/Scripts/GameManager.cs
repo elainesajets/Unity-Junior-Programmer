@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.IO;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -12,6 +13,7 @@ public class GameManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else if (instance != this)
         {
@@ -19,14 +21,23 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        DontDestroyOnLoad(gameObject);
+
     }
 
     public void ResetData()
     {
-        SaveSystem.Delete();
-        Debug.Log("Deleted save file");
-        OnDataReset?.Invoke();
+        string path = Path.Combine(Application.persistentDataPath, "savefile.json");
+
+        if (File.Exists(path))
+        {
+            SaveSystem.Delete();
+            Debug.Log("Deleted save file");
+            OnDataReset?.Invoke();
+        }
+        else
+        {
+            Debug.Log("No save files");
+        }
     }
 
     public static event System.Action OnDataReset;

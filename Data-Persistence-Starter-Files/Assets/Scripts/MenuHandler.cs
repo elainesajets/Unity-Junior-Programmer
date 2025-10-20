@@ -55,10 +55,16 @@ public class MenuHandler : MonoBehaviour
         }
     }
 
+    public void OnResetClicked()
+    {
+        if (GameManager.instance != null) GameManager.instance.ResetData();
+        highScoreText.text = "Best Score: 0";
+    }
+
     void OnEnable() { GameManager.OnDataReset += ResetHighScoreText; }
     void OnDisable() { GameManager.OnDataReset -= ResetHighScoreText; }
 
-    void ResetHighScoreText()
+    public void ResetHighScoreText()
     {
         highScoreText.text = "Best score: 0";
     }

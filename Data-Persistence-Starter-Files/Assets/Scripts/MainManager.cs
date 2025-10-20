@@ -3,6 +3,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+enum GameState
+{
+    WaitingToStart,
+    Playing,
+    GameOver
+}
 public class MainManager : MonoBehaviour
 {
 
@@ -14,14 +20,13 @@ public class MainManager : MonoBehaviour
     public Text ScoreText;
     public TextMeshProUGUI HighScoreText;
     public GameObject GameOverText;
-
-    private bool m_Started = false;
     private int m_Points;
     private int bestScore;
     private string highScoreName;
     public string playerName;
 
-    private bool m_GameOver = false;
+    GameState state = GameState.WaitingToStart;
+
 
     void Awake()
     {
@@ -57,38 +62,52 @@ public class MainManager : MonoBehaviour
 
     private void Update()
     {
-        if (!m_Started)
+        if (state == GameState.WaitingToStart)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                m_Started = true;
-                float randomDirection = Random.Range(-1.0f, 1.0f);
-                Vector3 forceDir = new Vector3(randomDirection, 1, 0);
-                forceDir.Normalize();
-
-                Ball.transform.SetParent(null);
-                Ball.AddForce(forceDir * 2.0f, ForceMode.VelocityChange);
+                state = GameState.Playing;
+                LaunchBall();
             }
         }
-        else if (m_GameOver)
+        else if (state == GameState.GameOver)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                if (m_Points > bestScore) UpdateBestScore();
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-
-            }
-            else if (Input.GetKeyDown(KeyCode.R))
-            {
-                GameManager.instance.ResetData();
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-                Debug.Log(playerName);
-            }
-            else if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                SceneManager.LoadScene(0);
-            }
+            HandleGameOverInput();
         }
+    }
+
+    void LaunchBall()
+    {
+        float randomDirection = Random.Range(-1.0f, 1.0f);
+        Vector3 forceDir = new Vector3(randomDirection, 1, 0);
+        forceDir.Normalize();
+
+        Ball.transform.SetParent(null);
+        Ball.AddForce(forceDir * 2.0f, ForceMode.VelocityChange);
+    }
+
+    void HandleGameOverInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (m_Points > bestScore) UpdateBestScore();
+            ReloadCurrentScene();
+        }
+        else if (Input.GetKeyDown(KeyCode.R))
+        {
+            GameManager.instance.ResetData();
+            ReloadCurrentScene();
+        }
+        else if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (m_Points > bestScore) UpdateBestScore();
+            SceneManager.LoadScene(0);
+        }
+    }
+
+    private void ReloadCurrentScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     void AddPoint(int point)
@@ -102,8 +121,9 @@ public class MainManager : MonoBehaviour
         bestScore = m_Points;
         highScoreName = playerName;
 
-        if (HighScoreText != null) HighScoreText.text = $"Best Score: {highScoreName} : {bestScore}";
-        //SavePoints();
+        if (HighScoreText != null)
+            HighScoreText.text = $"Best Score: {highScoreName} : {bestScore}";
+
         SaveSystem.Save(new SaveData
         {
             bestScore = bestScore,
@@ -115,39 +135,9 @@ public class MainManager : MonoBehaviour
 
     public void GameOver()
     {
-        m_GameOver = true;
+        state = GameState.GameOver;
         GameOverText.SetActive(true);
     }
-
-    // [System.Serializable]
-    // class SaveData
-    // {
-    //     public int bestScore;
-    //     public string highScoreName;
-    //     public string playerName;
-    // }
-
-    // public void SavePoints()
-    // {
-    //     var data = new SaveData
-    //     {
-    //         bestScore = bestScore,
-    //         highScoreName = highScoreName,
-    //         playerName = playerName
-    //     };
-    //     File.WriteAllText(Path.Combine(Application.persistentDataPath, "savefile.json"),
-    //                       JsonUtility.ToJson(data));
-    // }
-
-    // public void LoadPoints()
-    // {
-    //     var path = Path.Combine(Application.persistentDataPath, "savefile.json");
-    //     if (!File.Exists(path)) return;
-    //     var data = JsonUtility.FromJson<SaveData>(File.ReadAllText(path));
-    //     bestScore = data.bestScore;
-    //     highScoreName = data.highScoreName;
-    //     playerName = data.playerName;
-    // }
 
     void OnEnable() { SceneManager.sceneLoaded += OnSceneLoaded; }
     void OnDisable() { SceneManager.sceneLoaded -= OnSceneLoaded; }
