@@ -59,6 +59,9 @@ public class MenuHandler : MonoBehaviour
     {
         if (GameManager.instance != null) GameManager.instance.ResetData();
         highScoreText.text = "Best Score: 0";
+
+        if (warning.gameObject.activeSelf) warning.gameObject.SetActive(false);
+
     }
 
     void OnEnable() { GameManager.OnDataReset += ResetHighScoreText; }
