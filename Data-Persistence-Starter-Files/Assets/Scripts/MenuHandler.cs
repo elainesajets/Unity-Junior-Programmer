@@ -64,6 +64,11 @@ public class MenuHandler : MonoBehaviour
 
     }
 
+    public void onExitClicked()
+    {
+        if (GameManager.instance != null) GameManager.instance.Exit();
+    }
+
     void OnEnable() { GameManager.OnDataReset += ResetHighScoreText; }
     void OnDisable() { GameManager.OnDataReset -= ResetHighScoreText; }
 
