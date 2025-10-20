@@ -1,7 +1,5 @@
-using System.Drawing;
-using System.IO;
+using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -14,7 +12,7 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
-    public Text HighScoreText;
+    public TextMeshProUGUI HighScoreText;
     public GameObject GameOverText;
 
     private bool m_Started = false;
@@ -27,7 +25,13 @@ public class MainManager : MonoBehaviour
 
     void Awake()
     {
-        LoadPoints();
+        var savedData = SaveSystem.Load();
+        if (savedData != null)
+        {
+            bestScore = savedData.bestScore;
+            highScoreName = savedData.highScoreName;
+            playerName = savedData.playerName;
+        }
     }
 
     void Start()
@@ -98,8 +102,15 @@ public class MainManager : MonoBehaviour
         bestScore = m_Points;
         highScoreName = playerName;
 
-        HighScoreText.text = $"Best Score: {highScoreName} : {bestScore}";
-        SavePoints();
+        if (HighScoreText != null) HighScoreText.text = $"Best Score: {highScoreName} : {bestScore}";
+        //SavePoints();
+        SaveSystem.Save(new SaveData
+        {
+            bestScore = bestScore,
+            highScoreName = highScoreName,
+            playerName = playerName
+        });
+
     }
 
     public void GameOver()
@@ -108,35 +119,35 @@ public class MainManager : MonoBehaviour
         GameOverText.SetActive(true);
     }
 
-    [System.Serializable]
-    class SaveData
-    {
-        public int bestScore;
-        public string highScoreName;
-        public string playerName;
-    }
+    // [System.Serializable]
+    // class SaveData
+    // {
+    //     public int bestScore;
+    //     public string highScoreName;
+    //     public string playerName;
+    // }
 
-    public void SavePoints()
-    {
-        var data = new SaveData
-        {
-            bestScore = bestScore,
-            highScoreName = highScoreName,
-            playerName = playerName
-        };
-        File.WriteAllText(Path.Combine(Application.persistentDataPath, "savefile.json"),
-                          JsonUtility.ToJson(data));
-    }
+    // public void SavePoints()
+    // {
+    //     var data = new SaveData
+    //     {
+    //         bestScore = bestScore,
+    //         highScoreName = highScoreName,
+    //         playerName = playerName
+    //     };
+    //     File.WriteAllText(Path.Combine(Application.persistentDataPath, "savefile.json"),
+    //                       JsonUtility.ToJson(data));
+    // }
 
-    public void LoadPoints()
-    {
-        var path = Path.Combine(Application.persistentDataPath, "savefile.json");
-        if (!File.Exists(path)) return;
-        var data = JsonUtility.FromJson<SaveData>(File.ReadAllText(path));
-        bestScore = data.bestScore;
-        highScoreName = data.highScoreName;
-        playerName = data.playerName;
-    }
+    // public void LoadPoints()
+    // {
+    //     var path = Path.Combine(Application.persistentDataPath, "savefile.json");
+    //     if (!File.Exists(path)) return;
+    //     var data = JsonUtility.FromJson<SaveData>(File.ReadAllText(path));
+    //     bestScore = data.bestScore;
+    //     highScoreName = data.highScoreName;
+    //     playerName = data.playerName;
+    // }
 
     void OnEnable() { SceneManager.sceneLoaded += OnSceneLoaded; }
     void OnDisable() { SceneManager.sceneLoaded -= OnSceneLoaded; }
@@ -146,13 +157,17 @@ public class MainManager : MonoBehaviour
         if (HighScoreText == null)
         {
             var go = GameObject.Find("HighScoreText");
-            if (go != null) HighScoreText = go.GetComponent<Text>();
+            if (go != null) HighScoreText = go.GetComponent<TextMeshProUGUI>();
         }
 
-        if (HighScoreText != null)
+        if (bestScore > 0)
         {
             HighScoreText.text = $"Best Score: {highScoreName} : {bestScore}";
 
+        }
+        else
+        {
+            HighScoreText.text = $"Best Score: 0";
         }
     }
 }

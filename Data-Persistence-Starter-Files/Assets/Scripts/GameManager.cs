@@ -1,16 +1,8 @@
 using UnityEngine;
-using System.IO;
-using UnityEngine.SceneManagement;
-using TMPro;
-
-
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-
-
-
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
@@ -23,34 +15,21 @@ public class GameManager : MonoBehaviour
         }
         else if (instance != this)
         {
-            Destroy(this);
+            Destroy(gameObject);
+            return;
         }
 
-        DontDestroyOnLoad(this);
+        DontDestroyOnLoad(gameObject);
     }
 
     public void ResetData()
     {
-        string path = Path.Combine(Application.persistentDataPath, "savefile.json");
-
-        if (File.Exists(path))
-        {
-            File.Delete(path);
-            Debug.Log(path + " deleted");
-
-            if (SceneManager.GetActiveScene().name == "menu")
-            {
-                GameObject highScoreDisplay = GameObject.FindWithTag("HighScoreDisplay");
-                TextMeshProUGUI tmp = highScoreDisplay.GetComponent<TextMeshProUGUI>();
-                tmp.SetText("Best Score: 0");
-            }
-        }
-
-        else
-        {
-            Debug.Log("No save file found");
-        }
+        SaveSystem.Delete();
+        Debug.Log("Deleted save file");
+        OnDataReset?.Invoke();
     }
+
+    public static event System.Action OnDataReset;
 
     public void Exit()
     {

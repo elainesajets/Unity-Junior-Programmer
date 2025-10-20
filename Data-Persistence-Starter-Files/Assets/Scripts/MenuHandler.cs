@@ -1,9 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
-using System.IO;
-using UnityEngine.UI;
-
 public static class SessionData
 {
     public static string PlayerName;
@@ -28,13 +25,19 @@ public class MenuHandler : MonoBehaviour
 
     void Awake()
     {
-        LoadHighScore();
+        var savedData = SaveSystem.Load();
 
-        if (highestScorer != null)
+        if (savedData != null && !string.IsNullOrEmpty(savedData.highScoreName))
         {
-            highScoreText.text = $"Best Score: {highestScorer} : {highestPoints}";
-        }
+            highestScorer = savedData.highScoreName;
+            highestPoints = savedData.bestScore;
 
+            highScoreText.text = $"Best Score: {highestScorer}: {highestPoints}";
+        }
+        else
+        {
+            highScoreText.text = "Best Score: 0";
+        }
     }
 
     public void StartNew()
@@ -49,25 +52,16 @@ public class MenuHandler : MonoBehaviour
         {
             SessionData.PlayerName = nameInput.text;
             SceneManager.LoadScene(1);
-
         }
     }
-    [System.Serializable]
-    class SaveData
-    {
-        public int bestScore;
-        public string highScoreName;
-    }
 
-    public void LoadHighScore()
-    {
-        var path = Path.Combine(Application.persistentDataPath, "savefile.json");
-        if (!File.Exists(path)) return;
-        var data = JsonUtility.FromJson<SaveData>(File.ReadAllText(path));
-        highestPoints = data.bestScore;
-        highestScorer = data.highScoreName;
-    }
+    void OnEnable() { GameManager.OnDataReset += ResetHighScoreText; }
+    void OnDisable() { GameManager.OnDataReset -= ResetHighScoreText; }
 
+    void ResetHighScoreText()
+    {
+        highScoreText.text = "Best score: 0";
+    }
 }
 
 
