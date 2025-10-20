@@ -90,7 +90,7 @@ public class MainManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (m_Points > bestScore) UpdateBestScore();
+            UpdateBestScore();
             ReloadCurrentScene();
         }
         else if (Input.GetKeyDown(KeyCode.R))
@@ -100,7 +100,7 @@ public class MainManager : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (m_Points > bestScore) UpdateBestScore();
+            UpdateBestScore();
             SceneManager.LoadScene(0);
         }
     }
@@ -118,18 +118,21 @@ public class MainManager : MonoBehaviour
 
     void UpdateBestScore()
     {
-        bestScore = m_Points;
-        highScoreName = playerName;
-
-        if (HighScoreText != null)
-            HighScoreText.text = $"Best Score: {highScoreName} : {bestScore}";
-
-        SaveSystem.Save(new SaveData
+        if (m_Points > bestScore)
         {
-            bestScore = bestScore,
-            highScoreName = highScoreName,
-            playerName = playerName
-        });
+            bestScore = m_Points;
+            highScoreName = playerName;
+
+            if (HighScoreText != null)
+                HighScoreText.text = $"Best Score: {highScoreName} : {bestScore}";
+
+            SaveSystem.Save(new SaveData
+            {
+                bestScore = bestScore,
+                highScoreName = highScoreName,
+                playerName = playerName
+            });
+        }
 
     }
 
