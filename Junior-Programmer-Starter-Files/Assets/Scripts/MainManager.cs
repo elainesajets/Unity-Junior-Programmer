@@ -3,7 +3,9 @@ using System.IO;
 
 public class MainManager : MonoBehaviour
 {
-    public static MainManager Instance;
+    //can set the property value from within he class, but only get from outside the class
+    public static MainManager Instance { get; private set; }
+
     public Color TeamColor;
 
     private void Awake()
